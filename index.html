@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061522">
+<title>Flux Palettes</title>
+<style>
+:root{
+  --bg:#061522; --panel:#0b2031; --panel2:#102b40; --line:#29445a;
+  --text:#f4f7fa; --muted:#9eb0bf; --gold:#f5b83d; --blue:#1684ff;
+  --green:#35df79; --red:#ff4d4d; --orange:#ffb52e;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);max-width:700px;margin:auto}
+button,input{font:inherit}
+button{border:0;cursor:pointer}
+.app{padding:14px 0 24px}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 6px 16px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{font-size:38px}
+h1{margin:0;font-size:27px;line-height:1.05}
+h1 span{color:var(--gold)}
+.subtitle{color:var(--muted);font-size:13px;margin-top:4px}
+.icon-btn{width:42px;height:42px;border-radius:13px;background:var(--panel2);color:white;font-size:21px}
+.card{background:linear-gradient(145deg,#0d263a,#091b2a);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 8px 25px #0002}
+.section-title{font-size:18px;font-weight:800;margin-bottom:14px;text-align:left}
+label{display:block;color:#d8e1e8;font-size:13px;margin:11px 0 6px}
+input[type=text],input[type=number],input[type=search]{
+  width:100%;height:52px;border:1px solid #49647a;border-radius:12px;background:#061624;color:white;
+  padding:0 14px;outline:none;font-size:18px
+}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1684ff22}
+.qty-row{display:grid;grid-template-columns:1fr 54px 54px;gap:8px}
+.qty-row button{border-radius:12px;background:#60758a;color:white;font-size:26px}
+.qty-row button.plus{background:#126fe0}
+.position{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pos-btn{height:68px;border-radius:15px;color:white;background:#122c40;border:2px solid #49647a;font-weight:800;font-size:22px}
+.pos-btn small{display:block;font-size:11px;font-weight:600;margin-top:2px;color:#b9c7d1}
+.pos-btn.g.active{background:#0c6b32;border-color:#58ef8e}
+.pos-btn.d.active{background:#075fc5;border-color:#48a5ff}
+.add{width:100%;height:56px;margin-top:14px;border-radius:14px;background:var(--gold);color:#07131d;font-size:18px;font-weight:900}
+.search-row{position:relative}
+.search-row input{padding-left:44px}
+.search-icon{position:absolute;left:15px;top:14px;font-size:22px}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:10px 0 4px;width:100%}
+.filter{width:100%;min-width:0;white-space:nowrap;border:1px solid #3d576b;background:#0c2335;color:#dbe5ec;border-radius:20px;padding:8px 4px;font-size:14px;text-align:center}
+.filter.active{background:#126fe0;border-color:#126fe0;color:white}
+.table{overflow:hidden;border-radius:14px;border:1px solid #203c50}
+.thead,.row{display:grid;grid-template-columns:1.25fr .7fr .7fr .65fr .55fr;align-items:center}
+.thead{background:#102b40;color:#aebdca;font-size:12px;padding:9px 8px}
+.row{min-height:54px;padding:7px 8px;background:#071a29;border-top:1px solid #193247}
+.row:nth-child(even){background:#0a2031}
+.cell{font-size:14px;text-align:center}
+.cell:first-child{text-align:left;font-weight:800;font-size:16px}
+.g{color:var(--green);font-weight:800}.d{color:#43a3ff;font-weight:800}
+.status{font-size:20px}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+.bottom-stats{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #264154;margin-top:12px;padding-top:14px;text-align:center}
+.bottom-stats b{display:block;font-size:22px}.bottom-stats span{font-size:12px;color:var(--muted)}
+nav{position:sticky;bottom:0;background:#061522ee;backdrop-filter:blur(12px);display:grid;grid-template-columns:repeat(3,1fr);padding:10px 0 calc(8px + env(safe-area-inset-bottom));border-top:1px solid #1c374b}
+nav button{background:none;color:#8296a7;font-size:12px}.navicon{display:block;font-size:22px;margin-bottom:3px}nav button.active{color:#35a0ff}
+.overlay{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;z-index:20}
+.overlay.show{display:flex}
+.sheet{width:100%;max-width:700px;margin:auto 0 0;background:#091d2c;border:1px solid #36536a;border-radius:22px 22px 0 0;padding:18px;max-height:90vh;overflow:auto}
+.sheet-head{display:flex;justify-content:space-between;align-items:center}
+.sheet h2{margin:0;font-size:24px}.gold{color:var(--gold)}
+.pos-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0}
+.pos-box{padding:15px;border-radius:14px;background:#0d2a3d;text-align:center}.pos-box b{display:block;font-size:27px}
+.detail-status{border:1px solid #3a5569;border-radius:14px;padding:12px;margin:10px 0}
+.status-line{display:flex;justify-content:space-between;align-items:center;padding:9px 0}
+.toggle{width:48px;height:28px;border-radius:20px;background:#3d5060;padding:3px}.toggle i{display:block;width:22px;height:22px;border-radius:50%;background:white;transition:.2s}.toggle.on{background:#20c86a}.toggle.on i{transform:translateX(20px)}
+.notice{padding:12px;border-radius:12px;background:#3a2b0b;border:1px solid var(--orange);color:#ffd67a;margin-top:10px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.actions button{height:50px;border-radius:12px;color:white;font-weight:800}.edit{background:#126fe0}.delete{background:#d93030}.full{grid-column:1/-1;background:#516577}
+.history{margin-top:15px}.history-item{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #1f394c;padding:10px 0;font-size:13px}.history-item span{color:var(--muted);white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%) translateY(20px);opacity:0;background:#e9f4ff;color:#07131d;padding:12px 18px;border-radius:12px;font-weight:800;transition:.2s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%)}
+@media(max-width:380px){
+h1{font-size:23px}
+.thead,.row{grid-template-columns:1.2fr .65fr .65fr .6fr .5fr}
+.cell{font-size:12px}.cell:first-child{font-size:14px}
+.filter{font-size:13px;padding-left:2px;padding-right:2px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">🧱</div><div><h1>Flux <span>Palettes</span></h1><div class="subtitle">Suivi des commandes</div></div></div>
+  <button class="icon-btn" onclick="resetAll()" title="Effacer les données">⚙</button>
+</header>
+
+<section class="card">
+  <div class="section-title">1. Ajouter une commande</div>
+  <label>N° commande</label>
+  <input id="orderInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex. 2234">
+  <label>Nombre de blocs</label>
+  <div class="qty-row"><input id="qtyInput" type="number" min="1" value="1" onclick="selectQty()" onfocus="selectQty()"><button onclick="changeQty(-1)">−</button><button class="plus" onclick="changeQty(1)">+</button></div>
+  <label>Emplacement</label>
+  <div class="position">
+    <button id="gBtn" class="pos-btn g active" onclick="setPos('G')">G<small>GAUCHE</small></button>
+    <button id="dBtn" class="pos-btn d" onclick="setPos('D')">D<small>DROITE</small></button>
+  </div>
+  <button class="add" onclick="addOrder()">＋ Ajouter (Entrée)</button>
+</section>
+
+<section class="card">
+  <div class="section-title">🔎 Rechercher une commande</div>
+  <div class="search-row"><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Tapez un numéro de commande..."></div>
+  <div class="filters">
+    <button class="filter active" data-filter="all">Toutes</button>
+    <button class="filter" data-filter="G">Gauche</button>
+    <button class="filter" data-filter="D">Droite</button>
+    <button class="filter" data-filter="todo">À trouver</button>
+  </div>
+  <div class="table">
+    <div class="thead"><div>Commande</div><div>G</div><div>D</div><div>Total</div><div>Statut</div></div>
+    <div id="list"></div>
+  </div>
+  <div class="bottom-stats"><div><b id="orderCount">0</b><span>commandes</span></div><div><b id="blockCount">0</b><span>blocs au total</span></div></div>
+</section>
+
+<nav>
+  <button class="active"><span class="navicon">⌂</span>Commandes</button>
+  <button onclick="toast('Réglages locaux — aucune donnée n’est envoyée.')"><span class="navicon">⚙</span>Réglages</button>
+</nav>
+</div>
+
+<div id="overlay" class="overlay" onclick="closeIfOutside(event)">
+ <div class="sheet" id="sheet"></div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const KEY='flux_palettes_v1';
+let data=JSON.parse(localStorage.getItem(KEY)||'{}');
+let pos='G', filter='all';
+
+function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+function changeQty(n){let e=document.getElementById('qtyInput');e.value=Math.max(1,(parseInt(e.value)||1)+n)}
+function selectQty(){const e=document.getElementById('qtyInput');e.select()}
+function setPos(p){pos=p;gBtn.classList.toggle('active',p==='G');dBtn.classList.toggle('active',p==='D')}
+function addOrder(){
+  const num=orderInput.value.trim(), q=parseInt(qtyInput.value);
+  if(!num || !q || q<1){toast('Numéro et quantité requis');return}
+  if(!data[num]) data[num]={G:0,D:0,foundG:false,foundD:false,history:[]};
+  data[num][pos]+=q;
+  data[num].history.unshift({pos,q,time:new Date().toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})});
+  save(); orderInput.value=''; qtyInput.value=1; render(); toast(`Commande ${num} : +${q} bloc${q>1?'s':''} à ${pos==='G'?'gauche':'droite'}`); orderInput.focus();
+}
+function status(o){
+  const g=o.G>0 && o.foundG, d=o.D>0 && o.foundD;
+  return (g && (o.D===0||d))?'✓':(g||d)?'◷':'○';
+}
+function render(){
+  const s=searchInput.value.trim().toLowerCase();
+  let entries=Object.entries(data).filter(([n,o])=>{
+    if(s && !n.toLowerCase().includes(s))return false;
+    if(filter==='G'&&o.G===0)return false;if(filter==='D'&&o.D===0)return false;
+    if(filter==='todo' && ((o.G===0||o.foundG)&&(o.D===0||o.foundD)))return false;
+    return true;
+  });
+  list.innerHTML=entries.length?entries.map(([n,o])=>`<div class="row" onclick="openDetail('${n.replaceAll("'","\\'")}')">
+    <div class="cell">${n}</div><div class="cell g">${o.G||0}</div><div class="cell d">${o.D||0}</div>
+    <div class="cell">${(o.G||0)+(o.D||0)}</div><div class="cell status">${status(o)}</div>
+  </div>`).join(''):`<div class="empty">Aucune commande</div>`;
+  orderCount.textContent=Object.keys(data).length;
+  blockCount.textContent=Object.values(data).reduce((a,o)=>a+o.G+o.D,0);
+}
+function openDetail(n){
+  const o=data[n]; if(!o)return;
+  sheet.innerHTML=`<div class="sheet-head"><h2>Commande <span class="gold">${n}</span></h2><button class="icon-btn" onclick="closeSheet()">×</button></div>
+  <div class="pos-grid"><div class="pos-box"><span>Gauche</span><b class="g">${o.G}</b>blocs</div><div class="pos-box"><span>Droite</span><b class="d">${o.D}</b>blocs</div><div class="pos-box"><span>Total</span><b>${o.G+o.D}</b>blocs</div></div>
+  <div class="detail-status"><b>Statut de recherche</b>
+    ${o.G?`<div class="status-line"><span>${o.foundG?'✓':'○'} Gauche — ${o.foundG?'Trouvée':'À trouver'}</span><button class="toggle ${o.foundG?'on':''}" onclick="toggleFound('${n}','G')"><i></i></button></div>`:''}
+    ${o.D?`<div class="status-line"><span>${o.foundD?'✓':'○'} Droite — ${o.foundD?'Trouvée':'À trouver'}</span><button class="toggle ${o.foundD?'on':''}" onclick="toggleFound('${n}','D')"><i></i></button></div>`:''}
+    ${((o.G&& !o.foundG)||(o.D&&!o.foundD))?`<div class="notice">◷ Recherche partielle — il reste des blocs à trouver.</div>`:`<div class="notice" style="background:#0b3a22;border-color:#35df79;color:#9bffc0">✓ Commande entièrement trouvée.</div>`}
+  </div>
+  <div class="history"><b>Historique des ajouts</b>${(o.history||[]).map(h=>`<div class="history-item"><span>${h.q} bloc${h.q>1?'s':''} à ${h.pos==='G'?'gauche':'droite'}</span><span>${h.time}</span></div>`).join('')}</div>
+  <div class="actions"><button class="edit" onclick="editOrder('${n}')">✎ Modifier</button><button class="delete" onclick="deleteOrder('${n}')">🗑 Supprimer</button><button class="full" onclick="markAllFound('${n}')">✓ Marquer comme trouvée (total)</button></div>`;
+  overlay.classList.add('show');
+}
+function toggleFound(n,p){data[n]['found'+p]=!data[n]['found'+p];save();render();openDetail(n)}
+function markAllFound(n){data[n].foundG=data[n].G>0;data[n].foundD=data[n].D>0;save();render();openDetail(n);toast('Commande marquée comme trouvée')}
+function deleteOrder(n){if(confirm('Supprimer la commande '+n+' ?')){delete data[n];save();closeSheet();render();}}
+function editOrder(n){
+  const o=data[n];closeSheet();orderInput.value=n;qtyInput.value=1;setPos('G');orderInput.focus();toast('Saisie prête — ajoute une nouvelle quantité');
+}
+function closeIfOutside(e){if(e.target===overlay)closeSheet()}
+function closeSheet(){overlay.classList.remove('show')}
+function showStats(){
+  const total=Object.values(data).reduce((a,o)=>a+o.G+o.D,0), found=Object.values(data).filter(o=>(!o.G||o.foundG)&&(!o.D||o.foundD)).length;
+  toast(`${Object.keys(data).length} commandes • ${total} blocs • ${found} commandes entièrement trouvées`);
+}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove('show'),2200)}
+function resetAll(){if(confirm('Effacer toutes les données locales ?')){data={};save();render();toast('Données locales effacées')}}
+orderInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addOrder()}});
+qtyInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addOrder()}});
+qtyInput.addEventListener('focus',selectQty);
+searchInput.addEventListener('input',render);
+document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()}));
+render();
+</script>
+</body>
+</html>
