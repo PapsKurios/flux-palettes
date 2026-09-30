@@ -47,6 +47,16 @@ input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #1684ff22}
 .filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:10px 0 4px;width:100%}
 .filter{width:100%;min-width:0;white-space:nowrap;border:1px solid #3d576b;background:#0c2335;color:#dbe5ec;border-radius:20px;padding:8px 4px;font-size:14px;text-align:center}
 .filter.active{background:#126fe0;border-color:#126fe0;color:white}
+.manage-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 8px}
+.manage-btn{height:42px;border-radius:12px;border:1px solid #3d576b;background:#102b40;color:#e6eef4;font-weight:800;font-size:13px}
+.select-mode.active{background:#126fe0;border-color:#49a7ff}
+.reset-btn{border-color:#8b3a3a;color:#ffb1b1}
+.bulk-bar{display:none;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;margin-bottom:8px;border:1px solid #31546d;border-radius:12px;background:#0c2639;color:#dce8ef;font-size:13px}
+.bulk-bar.show{display:flex}
+.bulk-delete{height:36px;padding:0 12px;border:0;border-radius:9px;background:#d93030;color:white;font-weight:800}
+.row{cursor:pointer}.row.selected{background:#173b51!important;box-shadow:inset 3px 0 0 #1684ff}
+.select-box{display:inline-flex;width:20px;height:20px;border:2px solid #60798d;border-radius:6px;align-items:center;justify-content:center;margin-right:6px;vertical-align:-4px;color:white;font-size:13px;font-weight:900}
+.row.selected .select-box{background:#1684ff;border-color:#1684ff}
 .table{overflow:hidden;border-radius:14px;border:1px solid #203c50}
 .thead,.row{display:grid;grid-template-columns:1.25fr .7fr .7fr .65fr .55fr;align-items:center}
 .thead{background:#102b40;color:#aebdca;font-size:12px;padding:9px 8px}
@@ -93,9 +103,9 @@ h1{font-size:23px}
 <section class="card">
   <div class="section-title">1. Ajouter une commande</div>
   <label>N° commande</label>
-  <input id="orderInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex. 2234">
+  <input id="orderInput" type="tel" inputmode="numeric" pattern="[0-9]*" inputmode="numeric" autocomplete="off" placeholder="Ex. 2234">
   <label>Nombre de blocs</label>
-  <div class="qty-row"><input id="qtyInput" type="number" min="1" value="1" onclick="selectQty()" onfocus="selectQty()"><button onclick="changeQty(-1)">−</button><button class="plus" onclick="changeQty(1)">+</button></div>
+  <div class="qty-row"><input id="qtyInput" type="number" inputmode="numeric" pattern="[0-9]*" min="1" value="1" onclick="selectQty()" onfocus="selectQty()"><button onclick="changeQty(-1)">−</button><button class="plus" onclick="changeQty(1)">+</button></div>
   <label>Emplacement</label>
   <div class="position">
     <button id="gBtn" class="pos-btn g active" onclick="setPos('G')">G<small>GAUCHE</small></button>
@@ -106,12 +116,20 @@ h1{font-size:23px}
 
 <section class="card">
   <div class="section-title">🔎 Rechercher une commande</div>
-  <div class="search-row"><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Tapez un numéro de commande..."></div>
+  <div class="search-row"><span class="search-icon">⌕</span><input id="searchInput" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Tapez un numéro de commande..."></div>
   <div class="filters">
     <button class="filter active" data-filter="all">Toutes</button>
     <button class="filter" data-filter="G">Gauche</button>
     <button class="filter" data-filter="D">Droite</button>
     <button class="filter" data-filter="todo">À trouver</button>
+  </div>
+  <div class="manage-row">
+    <button class="manage-btn select-mode" id="selectModeBtn" onclick="toggleSelectMode()">☑ Sélectionner</button>
+    <button class="manage-btn reset-btn" onclick="resetAll()">🗑 Tout effacer</button>
+  </div>
+  <div id="bulkBar" class="bulk-bar">
+    <span><b id="selectedCount">0</b> sélectionnée(s)</span>
+    <button class="bulk-delete" onclick="deleteSelected()">Supprimer la sélection</button>
   </div>
   <div class="table">
     <div class="thead"><div>Commande</div><div>G</div><div>D</div><div>Total</div><div>Statut</div></div>
@@ -134,7 +152,7 @@ h1{font-size:23px}
 <script>
 const KEY='flux_palettes_v1';
 let data=JSON.parse(localStorage.getItem(KEY)||'{}');
-let pos='G', filter='all';
+let pos='G', filter='all', selectMode=false, selected=new Set();
 
 function save(){localStorage.setItem(KEY,JSON.stringify(data));}
 function changeQty(n){let e=document.getElementById('qtyInput');e.value=Math.max(1,(parseInt(e.value)||1)+n)}
@@ -160,12 +178,40 @@ function render(){
     if(filter==='todo' && ((o.G===0||o.foundG)&&(o.D===0||o.foundD)))return false;
     return true;
   });
-  list.innerHTML=entries.length?entries.map(([n,o])=>`<div class="row" onclick="openDetail('${n.replaceAll("'","\\'")}')">
-    <div class="cell">${n}</div><div class="cell g">${o.G||0}</div><div class="cell d">${o.D||0}</div>
-    <div class="cell">${(o.G||0)+(o.D||0)}</div><div class="cell status">${status(o)}</div>
-  </div>`).join(''):`<div class="empty">Aucune commande</div>`;
+  list.innerHTML=entries.length?entries.map(([n,o])=>{
+    const safe=n.replaceAll("'","\\'");
+    const isSelected=selected.has(n);
+    return `<div class="row ${isSelected?'selected':''}" onclick="handleRowClick('${safe}',event)">
+      <div class="cell"><span class="select-box">${isSelected?'✓':''}</span>${n}</div>
+      <div class="cell g">${o.G||0}</div><div class="cell d">${o.D||0}</div>
+      <div class="cell">${(o.G||0)+(o.D||0)}</div><div class="cell status">${status(o)}</div>
+    </div>`;
+  }).join(''):`<div class="empty">Aucune commande</div>`;
   orderCount.textContent=Object.keys(data).length;
-  blockCount.textContent=Object.values(data).reduce((a,o)=>a+o.G+o.D,0);
+  blockCount.textContent=Object.values(data).reduce((a,o)=>a+o.G+o.D,0); selectedCount.textContent=selected.size; bulkBar.classList.toggle('show',selectMode); selectModeBtn.classList.toggle('active',selectMode); selectModeBtn.textContent=selectMode?'☑ Terminer sélection':'☑ Sélectionner';
+}
+function toggleSelectMode(){
+  selectMode=!selectMode;
+  if(!selectMode) selected.clear();
+  render();
+}
+function handleRowClick(n,e){
+  if(selectMode){
+    e.stopPropagation();
+    if(selected.has(n)) selected.delete(n); else selected.add(n);
+    render();
+  }else{
+    openDetail(n);
+  }
+}
+function deleteSelected(){
+  if(!selected.size){toast('Aucune commande sélectionnée');return}
+  const count=selected.size;
+  if(confirm(`Supprimer ${count} commande${count>1?'s':''} sélectionnée${count>1?'s':''} ?`)){
+    selected.forEach(n=>delete data[n]);
+    selected.clear(); selectMode=false; save(); render();
+    toast(`${count} commande${count>1?'s':''} supprimée${count>1?'s':''}`);
+  }
 }
 function openDetail(n){
   const o=data[n]; if(!o)return;
@@ -193,7 +239,13 @@ function showStats(){
   toast(`${Object.keys(data).length} commandes • ${total} blocs • ${found} commandes entièrement trouvées`);
 }
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>e.classList.remove('show'),2200)}
-function resetAll(){if(confirm('Effacer toutes les données locales ?')){data={};save();render();toast('Données locales effacées')}}
+function resetAll(){
+  const count=Object.keys(data).length;
+  if(!count){toast('Aucune commande à effacer');return}
+  if(confirm(`Effacer les ${count} commande${count>1?'s':''} enregistrée${count>1?'s':''} ?\n\nCette action fera un reset complet et ne peut pas être annulée.`)){
+    data={}; selected.clear(); selectMode=false; save(); render(); toast('Reset complet effectué');
+  }
+}
 orderInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addOrder()}});
 qtyInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addOrder()}});
 qtyInput.addEventListener('focus',selectQty);
