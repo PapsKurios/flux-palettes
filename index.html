@@ -91,6 +91,23 @@ h1{font-size:23px}
 .cell{font-size:12px}.cell:first-child{font-size:14px}
 .filter{font-size:13px;padding-left:2px;padding-right:2px}
 }
+
+.order-input,.search-input,#orderInput,#searchInput,#qtyInput{
+  height:52px;
+  box-sizing:border-box;
+  border:1px solid #49647a;
+  border-radius:12px;
+  background:#061624;
+  color:white;
+  font-size:16px;
+  outline:none;
+}
+#orderInput,#searchInput{width:100%;padding:0 14px;}
+#qtyInput{padding:0 14px;}
+.order-input:focus,.search-input:focus,#orderInput:focus,#searchInput:focus,#qtyInput:focus{
+  border-color:#1684ff;
+  box-shadow:0 0 0 2px rgba(22,132,255,.12);
+}
 </style>
 </head>
 <body>
@@ -105,7 +122,7 @@ h1{font-size:23px}
   <label>N° commande</label>
   <input id="orderInput" type="tel" inputmode="numeric" pattern="[0-9]*" inputmode="numeric" autocomplete="off" placeholder="Ex. 2234">
   <label>Nombre de blocs</label>
-  <div class="qty-row"><input id="qtyInput" type="number" inputmode="numeric" pattern="[0-9]*" min="1" value="1" onclick="selectQty()" onfocus="selectQty()"><button onclick="changeQty(-1)">−</button><button class="plus" onclick="changeQty(1)">+</button></div>
+  <div class="qty-row"><input id="qtyInput" type="number" inputmode="numeric" pattern="[0-9]*" inputmode="numeric" pattern="[0-9]*" min="1" value="1" onclick="selectQty()" onfocus="selectQty()"><button onclick="changeQty(-1)">−</button><button class="plus" onclick="changeQty(1)">+</button></div>
   <label>Emplacement</label>
   <div class="position">
     <button id="gBtn" class="pos-btn g active" onclick="setPos('G')">G<small>GAUCHE</small></button>
